@@ -1,3 +1,4 @@
 # ultrasound-converter
-App found @  https://ultrasound-converter.github.io [Google Chrome supported only]
+App @  https://ultrasound-converter.github.io [Google Chrome supported only]
+
 This is a web-based utility to extract images from 4d multiframe .dcm files exported from Philips QLab®.                  Select your frame of interest and a download a .zip file containing the image stack and the voxel dimensions in a .txt file.
