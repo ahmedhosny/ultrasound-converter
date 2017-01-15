@@ -1,0 +1,34 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+html, body { 
+  background-color:#fff;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width:100%;
+  font-family: 'Open Sans', sans-serif !important;
+/*  overflow: hidden !important; */ 
+}
+#imagePreview {
+	height: 500px;
+	width: 500px
+}
+#row1{
+	height:500px;
+	width:100%;
+}
+
+#canvas{
+	width:100%;
+	height:100%;
+	background-color: #d3d3d3;
+	border-radius: 6px;
+}
+#col1{
+	height:100%;
+/*	width:100%;*/
+}
+
+#col2{
+	height:100%;
+}
