@@ -1,6 +1,3 @@
-
-
-
 window.onload = function () {
 
     var zip = new JSZip();
