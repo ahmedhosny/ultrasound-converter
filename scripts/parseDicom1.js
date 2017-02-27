@@ -1,7 +1,8 @@
-var NRRDheader = ""
-var NRRDdata;
+var NRRDheader ;
+var NRRDdata ;
 var filename = "hello.nrrd";
-
+var dataSet;
+var offset;
 
 window.onload = function () {
 
@@ -15,7 +16,7 @@ window.onload = function () {
     columns;
 
     NRRDheader = "NRRD0004\r\n"
-    NRRDheader += "type: short\r\n"
+    NRRDheader += "type: uchar\r\n"
     NRRDheader += "dimension: 3\r\n"
     NRRDheader += "space: left-posterior-superior\r\n"
 
@@ -53,7 +54,7 @@ window.onload = function () {
 
         reader.onload = function(file) {
             var byteArray = new Uint8Array(reader.result);
-            var dataSet;
+            dataSet;
 
             // Invoke the paresDicom function and get back a DataSet object with the contents
             try {
@@ -89,7 +90,7 @@ window.onload = function () {
                     //
                     // No of frames (to be displayed on UI)
                     //
-                    var noOfFrames = parseInt( dataSet.string('x00280008') )
+                    var noOfFrames = parseInt( dataSet.string('x00280008') ) 
                     if (!isInt(noOfFrames) || noOfFrames === undefined){
                         console.log ( "noOfFrames is not a float or is undefined.."  )
                     }
@@ -112,11 +113,15 @@ window.onload = function () {
                     //
                     var pixelDataElement = dataSet.elements.x7fe00010;
                     //
+                    offset = pixelDataElement.dataOffset
                     pixelData = new Uint8ClampedArray(dataSet.byteArray.buffer, pixelDataElement.dataOffset);
+
+                    console.log (pixelData)
                     // IF THEY DONT EXIST
                     if (pixelData === undefined){
                         console.log("x7FE00010 - pixelData info does not exist")
                     } 
+
 
                     // 
                     // my CALCS
@@ -124,11 +129,13 @@ window.onload = function () {
                     pixelPerSlice = rows*columns;
                     slicePerFrame = ( pixelData.length / pixelPerSlice ) / noOfFrames
 
+
                     createSelector(noOfFrames)
                     dicomFileLabel.innerHTML = dicomName +  ' loaded. '
                     console.log(deltaX,deltaY,deltaZ,noOfFrames,rows,columns,pixelPerSlice,slicePerFrame)
 
-                    NRRDheader += "sizes: " +  rows + " " + columns + " " + slicePerFrame + "\r\n"
+
+                    NRRDheader += "sizes: " +  columns + " " + rows + " " + slicePerFrame + "\r\n"
                     NRRDheader += "space directions: (" +  deltaX + ",0,0) (0," + deltaY + ",0) (0,0," + deltaZ + ")\r\n"
                     NRRDheader += "kinds: domain domain domain\r\n"
                     NRRDheader += "endian: little\r\n"
@@ -155,6 +162,8 @@ window.onload = function () {
 
     // pixelData is int not byte anymore
     function getImages(pixelData,reqFrame,pixelPerSlice,slicePerFrame,rows,columns){
+
+        reqFrame = reqFrame - 1
         //
         // clear canvas
         var canvas = document.getElementById('canvas'),
@@ -168,7 +177,8 @@ window.onload = function () {
         var k = start;
         fileName = 0;
 
-        NRRDdata = pixelData.slice(start,end)
+        // buffer, byteOffset, length
+        NRRDdata = new Uint8Array( dataSet.byteArray.buffer , offset + start , pixelPerSlice*slicePerFrame );
 
         console.log(start,end,step)
 
@@ -179,15 +189,21 @@ window.onload = function () {
             fileName = fileName + 1
             //
             k = k + step ;
-            if( k < end ){
+            if( k <= end ){
                 setTimeout( f, 1 ); //25
             }
             // when done
             else{
                 createDowloadButton(reqFrame,dicomName)
+                
+
             }
         }
         f();
+
+
+
+
 
     }
 
@@ -259,25 +275,27 @@ window.onload = function () {
             // make images
             getImages(pixelData,reqFrame,pixelPerSlice,slicePerFrame,rows,columns)
             // make generate button ready
-            
         });
 
     }
 
 
     function createDowloadButton(reqFrame,dicomName){
+
         var div = document.getElementById("buttonDiv");
         div.innerHTML = ""
         div.innerHTML = '<a class="btn btn-primary btn-md" href="#" id="downloadButton">download ' + dicomName.split('.')[0]  + "_" + reqFrame.toString() + '.zip</a>' 
 
         $("#downloadButton").click(function(){
 
-            var combined = writeNRRD(NRRDheader , NRRDdata)
+            var combined = writeNRRD(NRRDheader , NRRDdata ) 
             var blob = new Blob([ combined ], {type: "application/octet-stream"});
             saveAs(blob, filename);
 
         });
+
     }
+
 }
 
 
@@ -311,15 +329,14 @@ function writeNRRD(header , data) {
     // header is a string
     // data is a Uint8ClampedArray 
     var headerBytes = stringToUint8Array(header);
-    var x = new Uint8Array(data);
     // now both are Uint8Array
-    var out = new Uint8Array( headerBytes.length + x.length )
+    var out = new Uint8Array( headerBytes.length + data.length )
     // set
     out.set(headerBytes);
-    out.set(x, headerBytes.length);
+    out.set(data, headerBytes.length);
     //
-    console.log(headerBytes)
-    console.log(x)
+    // console.log(headerBytes)
+    // console.log(data)
     console.log(out)
     return out;
 }
