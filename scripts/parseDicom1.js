@@ -1,9 +1,3 @@
-var NRRDheader ;
-var NRRDdata ;
-var filename = "hello.nrrd";
-var dataSet;
-var offset;
-
 window.onload = function () {
 
     var dicomName;
@@ -15,10 +9,10 @@ window.onload = function () {
     rows,
     columns;
 
-    NRRDheader = "NRRD0004\r\n"
-    NRRDheader += "type: uchar\r\n"
-    NRRDheader += "dimension: 3\r\n"
-    NRRDheader += "space: left-posterior-superior\r\n"
+    var NRRDheader ;
+    var NRRDdata ;
+    var dataSet;
+    var offset;
 
     var dicomFile = document.getElementById('dicomFile');
     var dicomFileLabel = document.getElementById('dicomFileLabel');
@@ -33,12 +27,34 @@ window.onload = function () {
         buttonDiv.innerHTML = ""
 
         dcm = dicomFile.files[0]
-        dicomName = dicomFile.files[0].name
-        parseDCM(dcm)
 
-        var canvas = document.getElementById('canvas'),
-        ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+        // if dcm file..
+        if (  dcm.name.split(".")[1] == "dcm"  ) { 
+
+            // reset it
+            NRRDheader = ""
+            NRRDheader = "NRRD0004\r\n"
+            NRRDheader += "type: uchar\r\n"
+            NRRDheader += "dimension: 3\r\n"
+            NRRDheader += "space: left-posterior-superior\r\n"
+
+            
+            dicomName = dicomFile.files[0].name // updates name.
+            parseDCM(dcm) // updates dataset and offset
+
+            var canvas = document.getElementById('canvas'),
+            ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        }
+
+        // if not ..
+        else{
+            dicomFileLabel.innerHTML = "I need a .dcm file not a ." +  dcm.name.split(".")[1] + " file!"
+
+        }
 
 
     });
@@ -284,13 +300,13 @@ window.onload = function () {
 
         var div = document.getElementById("buttonDiv");
         div.innerHTML = ""
-        div.innerHTML = '<a class="btn btn-primary btn-md" href="#" id="downloadButton">download ' + dicomName.split('.')[0]  + "_" + reqFrame.toString() + '.zip</a>' 
+        div.innerHTML = '<a class="btn btn-primary btn-md" href="#" id="downloadButton">download ' + dicomName.split('.')[0]  + "_" + (reqFrame+1).toString() + '.nrrd</a>' 
 
         $("#downloadButton").click(function(){
 
             var combined = writeNRRD(NRRDheader , NRRDdata ) 
             var blob = new Blob([ combined ], {type: "application/octet-stream"});
-            saveAs(blob, filename);
+            saveAs(blob, dicomName.split('.')[0]  + "_" + (reqFrame+1).toString() + '.nrrd' );
 
         });
 
@@ -335,8 +351,6 @@ function writeNRRD(header , data) {
     out.set(headerBytes);
     out.set(data, headerBytes.length);
     //
-    // console.log(headerBytes)
-    // console.log(data)
     console.log(out)
     return out;
 }
