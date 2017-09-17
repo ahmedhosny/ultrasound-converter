@@ -3,6 +3,8 @@ Access the web app <a href="https://ahmedhosny.github.io/ultrasound-converter/" 
 
 This is a web-based utility to extract a single timeframe from 4d multiframe .dcm files exported from Philips QLab®. Select your frame of interest and download a .nrrd file.
 
+**Not for clinical use.**
+
 ## Manuscript
 The manuscript can be accessed <a href="http://www.sciencedirect.com/science/article/pii/S0022522317318263" target="_blank">here</a> and the unedited version can be downloaded <a href="http://ahmedhosny.net/files/05_papers/Unlocking_vendor_specific_tags.pdf" target="_blank">here</a>.
 
