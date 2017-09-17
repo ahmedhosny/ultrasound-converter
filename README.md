@@ -4,7 +4,7 @@ Access the web app [here](https://ahmedhosny.github.io/ultrasound-converter/) [G
 This is a web-based utility to extract a single timeframe from 4d multiframe .dcm files exported from Philips QLab®. Select your frame of interest and download a .nrrd file.
 
 ## manuscript
-The manuscript can be accessed [here](http://www.sciencedirect.com/science/article/pii/S0022522317318263) and the unedited version can be downloaded [here].(http://ahmedhosny.net/files/05_papers/Unlocking_vendor_specific_tags.pdf)
+The manuscript can be accessed [here](http://www.sciencedirect.com/science/article/pii/S0022522317318263) and the unedited version can be downloaded [here](http://ahmedhosny.net/files/05_papers/Unlocking_vendor_specific_tags.pdf).
 
 ## Instructions
 This video is a step by step guide for creating .stl files from echocardiography datasets suitable for 3d printing. We demonstrate how to extract datasets from the echo machine, how to use this website to convert datasets to .nrrd files [starts at 01:53] and finally how to use 3d-slicer to generate .stl files. 
